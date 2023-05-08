@@ -34,7 +34,6 @@ def get_place_amenities(place_id):
     When a non_existent state_id is provided (url/states/<invalid_state_id>
     the page displays "Not found!"
     """
-    temp = list()
 
     if True:
         if STORAGE_TYPE == "db":
@@ -43,17 +42,18 @@ def get_place_amenities(place_id):
                 abort(404)
             amenities = [amenity.to_dict() for amenity in place.amenities]
         else:
-            place = storage.all(Place).values()
+            place = storage.get(Place, place_id)
             if not place:
                 abort(404)
             amenities = [storage.get(Amenity, amenity_id).to_dict()
                          for amenity_id in place.amenity_ids]
         return jsonify(amenities)
 
+
 @app_views.route('/places/<place_id>/amenities/<amenity_id>',
                  strict_slashes=False,
                  methods=['DELETE'])
-def del_place_amenity(place_id,amenity_id):
+def del_place_amenity(place_id, amenity_id):
     """
     Deletes an Amenity object of a Place
     """
@@ -83,12 +83,9 @@ def del_place_amenity(place_id,amenity_id):
     return make_response(jsonify({}), 200)
 
 
-
-
-
-@app_views.route('/places/<place_id>/reviews/<amenity_id>',
+@app_views.route('/places/<place_id>/amenities/<amenity_id>',
                  strict_slashes=False, methods=['POST'])
-def post_place_amenity(place_id,amenity_id):
+def post_place_amenity(place_id, amenity_id):
     """
     Links an Amenity Object to a Place (many-2-many relationship)
     """
@@ -146,5 +143,3 @@ def post_place_amenity(place_id,amenity_id):
     storage.save()
     return make_response(jsonify(amenity.to_dict()), 201)
     # return jsonify(new_object.to_dict()), 201
-
-
