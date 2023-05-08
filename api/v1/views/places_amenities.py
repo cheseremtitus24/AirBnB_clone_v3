@@ -148,21 +148,3 @@ def post_place_amenity(place_id,amenity_id):
     # return jsonify(new_object.to_dict()), 201
 
 
-@app_views.route('/reviews/<review_id>',
-                 strict_slashes=False, methods=['PUT'])
-def update_review(review_id):
-    """ Updates a city's values
-    if requested dictionary is none output 'Not a JSON'
-    if post data does not contain the key 'name' output 'Missing name'
-    On success return a status of 201 else 400
-    """
-    req_json = request.get_json()
-    if req_json is None:
-        abort(400, 'Not a JSON')
-    ignore_fields = ['place_id', 'user_id']
-    status = storage.update(Review, review_id, req_json)
-
-    if status:
-        return jsonify(status.to_dict())
-    else:
-        abort(404)
